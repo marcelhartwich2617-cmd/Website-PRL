@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRL Esports | Official Factory Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;500;700&family=Titillium+Web:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-darker: #020306;
+            --bg-dark: #06080c;
+            --bg-surface: #0b0f17;
+            --accent: #ff1744; 
+            --accent-rgb: 255, 23, 68;
+            --text-main: #f5f6f8;
+            --text-muted: #627285;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --font-head: 'Titillium Web', sans-serif;
+            --font-data: 'IBM Plex Mono', monospace;
+            --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-darker);
+            color: var(--text-main);
+            font-family: var(--font-head);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(circle at 80% 20%, rgba(var(--accent-rgb), 0.05) 0%, transparent 50%),
+                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes heroReveal {
+            from { opacity: 0; transform: scale(1.05); filter: blur(10px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
+        }
+
+        @keyframes shimmer {
+            100% { left: 125%; }
+        }
+
+        @keyframes scrollLine {
+            0% { transform: scaleY(0); transform-origin: top; }
+            50% { transform: scaleY(1); transform-origin: top; }
+            51% { transform: scaleY(1); transform-origin: bottom; }
+            100% { transform: scaleY(0); transform-origin: bottom; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        .live-ticker {
+            background: var(--accent);
+            color: #fff;
+            font-family: var(--font-data);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .hero-cinema {
+            height: calc(100vh - 32px);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: heroReveal 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hero-video-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            filter: brightness(0.4) contrast(1.1);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(180deg, rgba(2,3,6,0.3) 0%, rgba(2,3,6,0.95) 100%);
+            z-index: -1;
+        }
+
+        .hero-content { text-align: center; z-index: 10; max-width: 800px; padding: 0 20px; }
+        .hero-tagline { font-family: var(--font-data); color: var(--accent); text-transform: uppercase; letter-spacing: 6px; font-size: 0.9rem; margin-bottom: 15px; }
+        .hero-title { font-size: 5.5rem; font-weight: 900; text-transform: uppercase; line-height: 0.9; letter-spacing: -3px; margin-bottom: 25px; }
+        .hero-title span { color: transparent; -webkit-text-stroke: 1px #fff; }
+
+        .hero-btn {
+            display: inline-block;
+            border: 1px solid #fff;
+            color: #fff;
+            text-transform: uppercase;
+            font-family: var(--font-data);
+            font-size: 0.85rem;
+            padding: 14px 32px;
+            text-decoration: none;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .hero-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #fff; z-index: -1; transform: translateX(-101%);
+            transition: var(--transition-smooth);
+        }
+
+        .hero-btn:hover { color: #000; }
+        .hero-btn:hover::before { transform: translateX(0); }
+
+        .scroll-indicator {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            font-family: var(--font-data); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 2px;
+        }
+
+        .scroll-indicator-line { width: 1px; height: 50px; background: rgba(255,255,255,0.1); position: relative; }
+        .scroll-indicator-line::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--accent); animation: scrollLine 2s infinite; }
+
+        section { padding: 100px 0; opacity: 0; transform: translateY(40px); transition: opacity 1s ease, transform 1s ease; }
+        section.visible { opacity: 1; transform: translateY(0); }
+
+        .section-header-block { margin-bottom: 60px; border-left: 4px solid var(--accent); padding-left: 20px; }
+        .section-idx { font-family: var(--font-data); color: var(--accent); font-size: 0.85rem; font-weight: 700; }
+        .section-headline { font-size: 3rem; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+        .section-headline span { color: transparent; -webkit-text-stroke: 1px var(--accent); }
+
+        .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border-color); border: 1px solid var(--border-color); margin-bottom: 80px; }
+        .stat-box { background: var(--bg-dark); padding: 30px; text-align: center; }
+        .stat-num { font-family: var(--font-data); font-size: 2.5rem; font-weight: 700; color: #fff; }
+        .stat-num span { color: var(--accent); }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; margin-top: 5px; }
+
+        .feed-container { display: flex; flex-direction: column; gap: 30px; }
+        .feed-card { background: var(--bg-surface); border: 1px solid var(--border-color); padding: 40px; position: relative; overflow: hidden; transition: var(--transition-smooth); }
+        .feed-card::before, .driver-card::before, .partner-card::before, .tech-spec-box::before { content: ''; position: absolute; top: 0; left: -150%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0) 100%); transform: skewX(-25deg); }
+        .feed-card:hover::before, .driver-card:hover::before, .partner-card:hover::before, .tech-spec-box:hover::before { animation: shimmer 0.9s ease-in-out; }
+        .feed-card:hover { border-color: rgba(var(--accent-rgb), 0.3); transform: scale(1.01); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .feed-meta { display: flex; justify-content: space-between; font-family: var(--font-data); font-size: 0.8rem; margin-bottom: 20px; }
+        .feed-tag { color: var(--accent); font-weight: 700; text-transform: uppercase; }
+        .feed-card h3 { font-size: 2rem; text-transform: uppercase; font-weight: 900; margin-bottom: 20px; letter-spacing: -0.5px; }
+        .feed-body { color: #9aa7b6; font-size: 1rem; line-height: 1.7; white-space: pre-line; }
+
+        .roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .management-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        .driver-card { background: var(--bg-surface); border: 1px solid var(--border-color); position: relative; display: flex; flex-direction: column; overflow: hidden; transition: var(--transition-smooth); }
+        .driver-card:hover { border-color: var(--accent); transform: translateY(-8px); box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
+        .driver-card.management-card:hover { border-color: #fff; }
+        .driver-visuals { position: relative; width: 100%; height: 380px; background: #030508; overflow: hidden; }
+        .driver-visuals img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: var(--transition-smooth); }
+        .driver-card:hover .driver-visuals img { transform: scale(1.05); filter: saturate(1.1); }
+        .driver-id-badge { position: absolute; top: 0; right: 0; background: var(--accent); color: #fff; font-weight: 900; font-size: 1.8rem; padding: 6px 18px; z-index: 10; }
+        .driver-id-badge.management-badge { background: #fff; color: #000; }
+        .driver-nation-tag { position: absolute; bottom: 20px; left: 20px; background: rgba(2, 3, 6, 0.85); padding: 6px 12px; border-radius: 2px; font-size: 0.75rem; font-family: var(--font-data); border: 1px solid rgba(255,255,255,0.05); }
+        .driver-details { padding: 30px; display: flex; flex-direction: column; flex-grow: 1; }
+        .driver-category { font-family: var(--font-data); color: var(--accent); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+        .driver-category.management-category { color: #fff; }
+        .driver-fullname { font-size: 2rem; font-weight: 900; text-transform: uppercase; margin: 2px 0 15px; letter-spacing: -0.5px; }
+        .driver-biography { color: #8896a7; font-size: 0.9rem; line-height: 1.6; margin-bottom: 25px; flex-grow: 1; }
+        .driver-comms-anchor { border-top: 1px solid var(--border-color); padding-top: 20px; font-family: var(--font-data); font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+
+        .tech-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 50px; }
+        .tech-spec-box { background: var(--bg-surface); border: 1px solid var(--border-color); padding: 40px; position: relative; overflow: hidden; }
+        .tech-spec-box h3 { font-size: 1.8rem; font-weight: 900; text-transform: uppercase; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
+        .spec-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 0.95rem; }
+        .spec-label { font-family: var(--font-data); color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; }
+        .spec-value { font-weight: 700; color: var(--text-main); }
+        .spec-value span { color: var(--accent); }
+
+        .partners-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        .partner-card { background: var(--bg-surface); border: 1px solid var(--border-color); padding: 40px; text-align: center; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: var(--transition-smooth); }
+        .partner-card.premium-tier { border: 1px solid rgba(var(--accent-rgb), 0.4); box-shadow: inset 0 0 15px rgba(var(--accent-rgb), 0.05); }
+        .partner-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .partner-logo-wrapper { height: 90px; display: flex; align-items: center; justify-content: center; margin-bottom: 25px; }
+        .partner-logo-wrapper img { max-height: 100%; max-width: 220px; object-fit: contain; }
+        .partner-card h3 { font-size: 1.6rem; text-transform: uppercase; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 4px; }
+        .partner-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px; }
+        .partner-badge { font-family: var(--font-data); font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+        .partner-card.premium-tier .partner-badge { color: var(--accent); }
+
+        .submit-btn { background: var(--accent); color: #fff; border: none; padding: 15px 30px; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 20px; width: 100%; }
+
+        .sponsor-form-wrapper { background: var(--bg-surface); border: 1px solid rgba(var(--accent-rgb), 0.3); padding: 50px; position: relative; }
+        .sponsor-form-wrapper::after { content: ''; position: absolute; top: -1px; left: -1px; width: 30px; height: 30px; border-top: 2px solid var(--accent); border-left: 2px solid var(--accent); }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin-top: 40px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-label { font-family: var(--font-data); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); }
+        .form-control { background: #04060a; border: 1px solid var(--border-color); padding: 16px; color: #fff; font-family: var(--font-head); font-size: 1rem; border-radius: 0; transition: var(--transition-smooth); width: 100%; }
+        .form-control:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.1); }
+        select.form-control { appearance: none; background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>"); background-repeat: no-repeat; background-position: right 15px center; }
+        textarea.form-control { resize: vertical; min-height: 120px; }
+        .form-submit-box { display: flex; justify-content: flex-end; margin-top: 30px; }
+
+        .livery-showcase { position: relative; background: var(--bg-surface); border: 1px solid var(--border-color); overflow: hidden; }
+        .livery-showcase::after { content: ''; position: absolute; top: -1px; right: -1px; width: 30px; height: 30px; border-top: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+        .livery-video-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
+        .livery-video-frame video { width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 1; }
+        .livery-fallback { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; align-items: center; justify-content: center; text-align: center; padding: 40px; font-family: var(--font-data); font-size: 0.85rem; color: var(--text-muted); background: #030508; z-index: 2; }
+        .livery-caption-bar { display: flex; justify-content: space-between; align-items: center; padding: 22px 40px; border-top: 1px solid var(--border-color); flex-wrap: wrap; gap: 15px; }
+        .livery-caption-left { font-family: var(--font-data); font-size: 0.8rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+        .livery-caption-left span { color: var(--accent); font-weight: 700; }
+        .livery-sound-hint { font-family: var(--font-data); font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; border: 1px solid var(--border-color); padding: 8px 16px; }
+
+        .brand-footer { background: #010204; padding: 40px 0; border-top: 1px solid var(--border-color); margin-top: 100px; }
+        .footer-flex { display: flex; justify-content: space-between; align-items: center; }
+        .footer-branding { font-family: var(--font-data); font-size: 0.85rem; color: var(--text-muted); }
+        .footer-branding span { color: var(--accent); font-weight: 700; }
+
+        @media (max-width: 1024px) {
+            .roster-grid, .partners-grid, .tech-grid { grid-template-columns: repeat(2, 1fr); }
+            .management-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-strip { grid-template-columns: repeat(2, 1fr); }
+            .hero-title { font-size: 4rem; }
+        }
+        @media (max-width: 768px) {
+            .roster-grid, .partners-grid, .form-grid, .tech-grid, .management-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .stats-strip { grid-template-columns: 1fr; }
+            .footer-flex { flex-direction: column; gap: 20px; text-align: center; }
+            .hero-title { font-size: 3rem; }
+            .sponsor-form-wrapper { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="live-ticker">+++ PRL FACTORY INFRASTRUCTURE // LIVE // ONLINE +++</div>
+
+    <div class="hero-cinema">
+        <video class="hero-video-bg" autoplay loop muted playsinline>
+            <source src="PRL.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-tagline">Sim Racing Factory Team</div>
+            <h1 class="hero-title">Precision.<span>Racing.</span>Line.</h1>
+            <a href="#feed" class="hero-btn">Enter Hub</a>
+        </div>
+        <div class="scroll-indicator">
+            <span>SCROLL FOR TELEMETRY</span>
+            <div class="scroll-indicator-line"></div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="stats-strip" style="margin-top: -40px; position: relative; z-index: 50;">
+            <div class="stat-box"><div class="stat-num">07</div><div class="stat-label">Active Pro Grid Drivers</div></div>
+            <div class="stat-num-box stat-box"><div class="stat-num">ACC</div><div class="stat-label">Primary Platform</div></div>
+            <div class="stat-box"><div class="stat-num">2026<span>.01</span></div><div class="stat-label">Est. Team Launch</div></div>
+            <div class="stat-box"><div class="stat-num">100<span>%</span></div><div class="stat-label">Factory Prepared</div></div>
+        </div>
+
+        <section id="feed">
+            <div class="section-header-block">
+                <div class="section-idx">// 03 STATUS DISPATCH</div>
+                <h2 class="section-headline">Global Feed</h2>
+            </div>
+            <div class="feed-container">
+                <div class="feed-card">
+                    <div class="feed-meta">
+                        <span class="feed-tag">Strategic Partnership</span>
+                        <span class="feed-date">11 May 2026</span>
+                    </div>
+                    <h3>Title Sponsor Announced</h3>
+                    <div class="feed-body">I am happy to announce that Nussy Motorsports will be the title sponsor for PRL Esports. They also have an Esports team and an F1 League which they have invited us to take part in. They also have designed and developed our website over the past couple of weeks.
+
+                    I would like to say a massive thank you to Marcel who is the owner of Nussy Motorsports for seeing potential in PRL Esports and I can't wait to start working along Nussy Motorsport this year and many years to come, and a massive thank you to Marcel Hartwich for the website design and development.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="livery">
+            <div class="section-header-block">
+                <div class="section-idx">// 03.2 CAR REVEAL</div>
+                <h2 class="section-headline">Official <span>Livery</span></h2>
+            </div>
+
+            <div class="livery-showcase">
+                <div class="livery-video-frame">
+                    <div class="livery-fallback" id="liveryFallback">Video wird geladen — falls hier nichts erscheint, liegt "liveryPRL.mp4" nicht im assets-Ordner oder der Dateiname stimmt nicht exakt überein.</div>
+                    <video autoplay loop muted playsinline preload="auto" oncanplay="document.getElementById('liveryFallback').style.display='none';" onloadeddata="document.getElementById('liveryFallback').style.display='none';">
+                        <source src="assets/liveryPRL.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="livery-caption-bar">
+                    <div class="livery-caption-left">PRL Esports // <span>2026 Season Livery</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="operations">
+            <div class="section-header-block">
+                <div class="section-idx">// 03.5 INFRASTRUCTURE SPECS</div>
+                <h2 class="section-headline">Engineered <span>Specs</span></h2>
+            </div>
+            
+            <div class="tech-grid">
+                <div class="tech-spec-box">
+                    <h3>Sim Environment</h3>
+                    <div class="spec-row"><div class="spec-label">Simulation Software</div><div class="spec-value">Assetto Corsa Competizione</div></div>
+                    <div class="spec-row"><div class="spec-label">Secondary Environment</div><div class="spec-value">F1 25 / iRacing</div></div>
+                    <div class="spec-row"><div class="spec-label">Telemetry Framework</div><div class="spec-value">MoTeC i2 Pro / Popometer</div></div>
+                    <div class="spec-row"><div class="spec-label">Physics Engine Refresh</div><div class="spec-value">400 <span>Hz</span></div></div>
+                </div>
+
+                <div class="tech-spec-box">
+                    <h3>Network Hub Specs</h3>
+                    <div class="spec-row"><div class="spec-label">Hosting Provider</div><div class="spec-value">GitHub Enterprise Infrastructure</div></div>
+                    <div class="spec-row"><div class="spec-label">SSL Handshake</div><div class="spec-value">TLS 1.3 // Automated</div></div>
+                    <div class="spec-row"><div class="spec-label">Primary HQ Discord Server</div><div class="spec-value">Active Grid Protocol</div></div>
+                    <div class="spec-row"><div class="spec-label">Development Pipeline</div><div class="spec-value">Nussy Development Stack</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="partners">
+            <div class="section-header-block">
+                <div class="section-idx">// 04 ALLIANCE NETWORK</div>
+                <h2 class="section-headline">Official <span>Partners</span></h2>
+            </div>
+            
+            <div class="partners-grid">
+                <div class="partner-card">
+                    <div class="partner-logo-wrapper">
+                        <img src="assets/partners/award_board.png" alt="Award Board" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; font-family:var(--font-data); font-size:2rem; font-weight:700; color:var(--text-muted);">[ AWARD BOARD ]</div>
+                    </div>
+                    <h3>Award Board</h3>
+                    <p class="partner-desc">Trophies & Rosettes</p>
+                    <div class="partner-badge">Official Partner</div>
+                </div>
+
+                <div class="partner-card premium-tier">
+                    <div class="partner-logo-wrapper">
+                        <img src="assets/nussy_logo.png" alt="Nussy Motorsports" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; font-family:var(--font-data); font-size:2rem; font-weight:700; color:var(--accent);">[ NUSSY ]</div>
+                    </div>
+                    <h3>Nussy Motorsports</h3>
+                    <p class="partner-desc">Motorsport Esports Business</p>
+                    <div class="partner-badge">Title Sponsor</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="management">
+            <div class="section-header-block">
+                <div class="section-idx">// 04.5 LEADERSHIP</div>
+                <h2 class="section-headline">Management</h2>
+            </div>
+
+            <div class="management-grid">
+                <div class="driver-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge">#80</span>
+                        <img src="assets/avatars/ronan.png" alt="Ronan">
+                        <div class="driver-nation-tag">🇬🇧 British Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category">ACC // OWNER & CEO</div>
+                        <h3 class="driver-fullname">Ronan</h3>
+                        <p class="driver-biography">As well as being the owner and CEO of PRL I am also the lead driver for the endurance team and I also compete in the CPG PRL World Championship. I have a passion for racing and being part of this amazing team. Being able to bring people into the team and building friendships that will last a life time is amazing and I couldn't ask for anything better.</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">ronanbird</span></div>
+                    </div>
+                </div>
+
+                <div class="driver-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge">#91</span>
+                        <img src="assets/avatars/liam.png" alt="Liam">
+                        <div class="driver-nation-tag">🇬🇧 British Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category">ACC // CCO</div>
+                        <h3 class="driver-fullname">Liam</h3>
+                        <p class="driver-biography">With being the Chief Commercial Officer I've also been with PRL from the start and helped it grow into the esports team it is today. I enjoy racing and have a passion for chasing lap times and constantly wanting to improve. I am a very approachable member of the PRL team and also help deal with the day to day runnings and help all our members whenever possible. I look forward to seeing you on the grid!</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">liamevison</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roster">
+            <div class="section-header-block">
+                <div class="section-idx">// 05 GRID INFRASTRUCTURE</div>
+                <h2 class="section-headline">Active Drivers</h2>
+            </div>
+            
+            <div class="roster-grid">
+                <div class="driver-card management-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge management-badge">#80</span>
+                        <img src="assets/avatars/ronan.png" alt="Ronan">
+                        <div class="driver-nation-tag">🇬🇧 British Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category management-category">MANAGEMENT // OWNER & CEO</div>
+                        <h3 class="driver-fullname">Ronan</h3>
+                        <p class="driver-biography">I started sim racing for fun with some friends and then realised that I wanted more so I made PRL Esports in January 2026 and we have grown quicker than I could have ever dreamed of and I love it. I have a long family history in motorsport which I have followed on with in Esports and in general life. "No matter what your dream is, you have to dedicate yourself entirely to it." ~ Ayrton Senna</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">ronanbird</span></div>
+                    </div>
+                </div>
+
+                <div class="driver-card management-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge management-badge">#91</span>
+                        <img src="assets/avatars/liam.png" alt="Liam">
+                        <div class="driver-nation-tag">🇬🇧 British Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category management-category">MANAGEMENT // CCO</div>
+                        <h3 class="driver-fullname">Liam</h3>
+                        <p class="driver-biography">Hello, my name is Liam and my primary job is a pilot, I'm currently studying to do my Airline Transport Pilots License. I was onboarded to PRL in January 2026 and my role is Chief commercial officer. I've always been surrounded by motorsport I have a passion for every element of the sport. I used to race motor-cross until I had a injury that made me leave the sport. I have a big passion for Motogp as this is what I grew up around and I have recently gotten into Formula one. When involved in Motorsport I like to dive to all the rules and regulations so I can understand the sport to its fullest and I'm happy to share my knowledge with other people in the community while also learning and reflecting on my own growth within the sport.</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">liamevison</span></div>
+                    </div>
+                </div>
+
+                <div class="driver-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge">#54</span>
+                        <img src="assets/avatars/olle.png" alt="Olle">
+                        <div class="driver-nation-tag">🇳🇱 Dutch Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category">PRO Elite // ACC</div>
+                        <h3 class="driver-fullname">Olle</h3>
+                        <p class="driver-biography">Hey, I'm Olle, 19 years old from the Netherlands. I'm a huge motorsport fan and have been simracing since 2021, starting out in F1. At the beginning of 2026 I made the switch to ACC and haven't looked back since. Always chasing the perfect lap.</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">deechteolle</span></div>
+                    </div>
+                </div>
+
+                <div class="driver-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge">#69</span>
+                        <img src="assets/avatars/josh.png" alt="Josh">
+                        <div class="driver-nation-tag">🇬🇧 British Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category">PRO Elite // ACC</div>
+                        <h3 class="driver-fullname">Josh</h3>
+                        <p class="driver-biography">After doing esports in f1 for a while and doing none stop f1 racing I'm looking for a good challenge. I am looking forward to racing with the team and getting to know them all better being part of the endurance team i hope my pace and consistency will lead to many positive results in the future for the team</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">autismboi8008</span></div>
+                    </div>
+                </div>
+
+                <div class="driver-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge">#09</span>
+                        <img src="assets/avatars/ethan.png" alt="Ethan">
+                        <div class="driver-nation-tag">🇬🇧 British Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category">PRO Elite // ACC</div>
+                        <h3 class="driver-fullname">Ethan</h3>
+                        <p class="driver-biography">My racing career started as a co-driver in the Circuit Rally Championship, and then decided to up my game to formula 1000 before moving into club-level Rotax karting, where I was very successful. My sim racing career began four years ago on iRacing, where I won the BRSCC MX-5 Championship. I am now proud to be racing with PRL Esports. I am also excited to announce that I will be taking part in the BRSCC Fiesta Junior Championship next year. I discovered PRL in 2025 through a friend and decided to give it a go, hoping to build on my success.</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">lightning09_</span></div>
+                    </div>
+                </div>
+
+                <div class="driver-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge">#98</span>
+                        <img src="assets/avatars/greg.png" alt="Greg">
+                        <div class="driver-nation-tag">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scottish Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category">PRO Elite // ACC</div>
+                        <h3 class="driver-fullname">Greg</h3>
+                        <p class="driver-biography">I'm Greg, racing for PRL Esports. I've competed in esports before, but since joining this team, there's been no looking back. I'm relatively new to sim racing with around a year and a half of experience, but I'm constantly pushing to improve and get faster every day. As the only Scot on the team, I bring a bit of the north with me—especially when it comes to wet-weather racing, where I really come into my own.</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">meldrum989811</span></div>
+                    </div>
+                </div>
+
+                <div class="driver-card">
+                    <div class="driver-visuals">
+                        <span class="driver-id-badge">#30</span>
+                        <img src="assets/avatars/joe.png" alt="Joe">
+                        <div class="driver-nation-tag">🇬🇧 British Crew</div>
+                    </div>
+                    <div class="driver-details">
+                        <div class="driver-category">PRO Elite // ACC</div>
+                        <h3 class="driver-fullname">Joe</h3>
+                        <p class="driver-biography">I'm best known for Hosting Joe's Motor Radio show on Ocean City Radio and/or Commentating on Plymouth Gladiators Speedway Bikes and the Werrington Park Hillclimb, but I love my Sim Racing aswell and have had Success in F1 leagues taking a few Wins and poles but I'm a big fan of Sportscar racing so my chance to race to Assetto Corsa Competizione races with the help of PRL is something I'm excited for so I hope you are entertained and to see more of me you can look at my youtube channel "Joseph Singh"</p>
+                        <div class="driver-comms-anchor"><span>ENC COMM-ID</span><span style="color:#fff;">joseph_singh30</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sponsor-form">
+            <div class="section-header-block">
+                <div class="section-idx">// 06 COMMERCIAL ACQUISITION</div>
+                <h2 class="section-headline">Become a <span>Sponsor</span></h2>
+                <p style="color: var(--text-muted); margin-top: 10px;">Partner with PRL eSports and reach thousands of passionate sim racing fans across the globe.</p>
+            </div>
+
+            <div class="sponsor-form-wrapper">
+                <form id="sponsorForm" onsubmit="return sendSponsorEmail(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Name / Company</label>
+                            <input type="text" name="name" class="form-control" required placeholder="Your name or company...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact (Email or Discord)</label>
+                            <input type="text" name="contact" class="form-control" required placeholder="How can we reach you...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Partnership Type</label>
+                            <select class="form-control" name="partnership_type">
+                                <option>Title Sponsor</option>
+                                <option>Official Partner</option>
+                                <option>Technical Partner</option>
+                                <option>Team Sponsor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-submit-box">
+                        <button type="submit" class="submit-btn" style="background:transparent; border:1px solid #fff; color:#fff; padding: 14px 32px; cursor:pointer;">SUBMIT REQUEST</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        });
+        document.querySelectorAll('section').forEach(s => observer.observe(s));
+
+        function sendSponsorEmail(event) {
+            event.preventDefault();
+            const form = event.target;
+            const name = form.name.value.trim();
+            const contact = form.contact.value.trim();
+            const partnershipType = form.partnership_type.value;
+
+            const subject = `Sponsoring Anfrage – ${name}`;
+            const body =
+                `Name / Company: ${name}\n` +
+                `Kontakt: ${contact}\n` +
+                `Partnerschaftstyp: ${partnershipType}`;
+
+            const mailtoLink = `mailto:admin@prlesports.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+            return false;
+        }
+    </script>
+    </body>
+</html>
